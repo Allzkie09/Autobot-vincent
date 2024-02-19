@@ -1,11 +1,18 @@
 const fs = require("fs-extra");
 const path = require("path");
 const axios = require("axios");
+const cheerio = require("cheerio");
+
+function getDomain(url) {
+	const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:/\n]+)/im;
+	const match = url.match(regex);
+	return match ? match[1] : null;
+}
 
 module.exports = {
 	config: {
 		name: "event",
-		version: "1.6",
+		version: "1.8",
 		author: "NTKhang",
 		countDown: 5,
 		role: 2,
@@ -53,12 +60,12 @@ module.exports = {
 		},
 		en: {
 			missingFileName: "⚠️ | Please enter the command name you want to reload",
-			loaded: "✅ | Loaded event command \"%1\" successfully",
+			loaded: "✅ | 𝗟𝗢𝗔𝗗𝗘𝗗 \"『%1』\" (◍•ᴗ•◍)✧*。《",
 			loadedError: "❌ | Loaded event command \"%1\" failed with error\n%2: %3",
-			loadedSuccess: "✅ | Loaded \"%1\" event command successfully",
+			loadedSuccess: "✅ | 𝗟𝗢𝗔𝗗𝗘𝗗 \"『%1』\" 𝙴𝚟𝚎𝚗𝚝 𝙲𝚖𝚍 𝚂𝚞𝚌𝚌𝚎𝚜𝚜𝚏𝚞𝚕𝚕𝚢《",
 			loadedFail: "❌ | Loaded event command \"%1\" failed\n%2",
 			missingCommandNameUnload: "⚠️ | Please enter the command name you want to unload",
-			unloaded: "✅ | Unloaded event command \"%1\" successfully",
+			unloaded: "✅ | 𝗟𝗢𝗔𝗗𝗘𝗗 \"『%1』\" (◍•ᴗ•◍)《",
 			unloadedError: "❌ | Unloaded event command \"%1\" failed with error\n%2: %3",
 			missingUrlCodeOrFileName: "⚠️ | Please enter the url or code and command file name you want to install",
 			missingUrlOrCode: "⚠️ | Please enter the url or code of the command file you want to install",
@@ -69,7 +76,7 @@ module.exports = {
 			installedError: "❌ | Installed event command \"%1\" failed with error\n%2: %3",
 			missingFile: "⚠️ | File \"%1\" not found",
 			invalidFileName: "⚠️ | Invalid file name",
-			unloadedFile: "✅ | Unloaded command \"%1\""
+			unloadedFile: "✅ | 𝗨𝗡𝗟𝗢𝗔𝗗 𝙲𝚖𝚍 \"『%1』\""
 		}
 	},
 
@@ -108,7 +115,7 @@ module.exports = {
 			if (arraySucces.length > 0)
 				msg += getLang("loadedSuccess", arraySucces.length) + '\n';
 			if (arrayFail.length > 0)
-				msg += getLang("loadedFail", arrayFail.length, "❗" + arrayFail.join("\n❗ "));
+				msg += (msg ? '\n' : '') + getLang("loadedFail", arrayFail.length, "❗" + arrayFail.join("\n❗ "));
 			message.reply(msg);
 		}
 		else if (args[0] == "unload") {
@@ -124,7 +131,7 @@ module.exports = {
 			let fileName = args[2];
 			let rawCode;
 
-			if (!url && !fileName)
+			if (!url || !fileName)
 				return message.reply(getLang("missingUrlCodeOrFileName"));
 
 			if (url.endsWith(".js")) {
@@ -136,7 +143,30 @@ module.exports = {
 			if (url.match(/(https?:\/\/(?:www\.|(?!www)))/)) {
 				if (!fileName || !fileName.endsWith(".js"))
 					return message.reply(getLang("missingFileNameInstall"));
+
+				const domain = getDomain(url);
+				if (!domain)
+					return message.reply(getLang("invalidUrl"));
+
+				if (domain == "pastebin.com") {
+					const regex = /https:\/\/pastebin\.com\/(?!raw\/)(.*)/;
+					if (url.match(regex))
+						url = url.replace(regex, "https://pastebin.com/raw/$1");
+					if (url.endsWith("/"))
+						url = url.slice(0, -1);
+				}
+				else if (domain == "github.com") {
+					const regex = /https:\/\/github\.com\/(.*)\/blob\/(.*)/;
+					if (url.match(regex))
+						url = url.replace(regex, "https://raw.githubusercontent.com/$1/$2");
+				}
+
 				rawCode = (await axios.get(url)).data;
+
+				if (domain == "savetext.net") {
+					const $ = cheerio.load(rawCode);
+					rawCode = $("#content").text();
+				}
 			}
 			else {
 				if (args[args.length - 1].endsWith(".js")) {

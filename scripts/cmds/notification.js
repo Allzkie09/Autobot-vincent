@@ -4,10 +4,10 @@ module.exports = {
 	config: {
 		name: "notification",
 		aliases: ["notify", "noti"],
-		version: "1.5",
+		version: "1.6",
 		author: "NTKhang",
 		countDown: 5,
-		role: 2,
+		role: 2, 
 		shortDescription: {
 			vi: "Gửi thông báo từ admin đến all box",
 			en: "Send notification from admin to all box"
@@ -35,7 +35,7 @@ module.exports = {
 		},
 		en: {
 			missingMessage: "Please enter the message you want to send to all groups",
-			notification: "Notification from admin bot to all chat groups (do not reply to this message)",
+			notification: "【𝗔𝗗𝗠𝗜𝗡】📫",
 			sendingNotification: "Start sending notification from admin bot to %1 chat groups",
 			sentNotification: "✅ Sent notification to %1 groups successfully",
 			errorSendingNotification: "An error occurred while sending to %1 groups:\n%2"
@@ -47,7 +47,7 @@ module.exports = {
 		if (!args[0])
 			return message.reply(getLang("missingMessage"));
 		const formSend = {
-			body: `${getLang("notification")}\n────────────────\n${args.join(" ")}`,
+			body: `${getLang("notification")}\n ━━━━━ ◈\n\n✏️${args.join(" ")}\n\n━━━━━ ◈\n━「🌷𝙰𝙴𝚂𝚃𝙷𝙴𝚁🌷」━`,
 			attachment: await getStreamsFromAttachment(
 				[
 					...event.attachments,
@@ -56,7 +56,7 @@ module.exports = {
 			)
 		};
 
-		const allThreadID = threadsData.getAll().filter(t => t.isGroup && t.members.find(m => m.userID == api.getCurrentUserID())?.inGroup);
+		const allThreadID = (await threadsData.getAll()).filter(t => t.isGroup && t.members.find(m => m.userID == api.getCurrentUserID())?.inGroup);
 		message.reply(getLang("sendingNotification", allThreadID.length));
 
 		let sendSucces = 0;

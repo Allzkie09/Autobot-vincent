@@ -3,7 +3,7 @@ const fs = require("fs-extra");
 module.exports = {
 	config: {
 		name: "loadconfig",
-		aliases: ["loadcf"],
+		aliases: ["loadcfg"],
 		version: "1.3",
 		author: "NTKhang",
 		countDown: 5,

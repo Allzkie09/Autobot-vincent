@@ -23,9 +23,9 @@ module.exports = {
 			session2: "noon",
 			session3: "afternoon",
 			session4: "evening",
-			leaveType1: "left",
-			leaveType2: "was kicked from",
-			defaultLeaveMessage: "{userName} {type} the group"
+			leaveType1: "𝗡𝚘𝚞𝚜 𝚊 𝗤𝚞𝚒𝚝𝚝𝚎𝚛 //(๑•́́ ﻌ •̀๑)// ",
+			leaveType2: "!(ó﹏ò｡)↷↷ 𝙰𝚜 𝚋𝚎𝚎𝚗 𝚌𝚔𝚒𝚔𝚎𝚍 ",
+			defaultLeaveMessage: "➤【{userName}】» {type} 💔",
 		}
 	},
 
@@ -96,3 +96,4 @@ module.exports = {
 			};
 	}
 };
+      
